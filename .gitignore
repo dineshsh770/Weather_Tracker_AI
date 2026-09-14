@@ -1,0 +1,24 @@
+# Secrets and configuration
+appsettings.json
+appsettings.Development.json
+appsettings.*.json
+!appsettings.example.json
+
+# Build output - IMPORTANT
+bin/
+obj/
+.vs/
+
+# Node dependencies
+node_modules/
+dist/
+
+# Visual Studio files
+*.user
+*.suo
+*.sln.docstates
+*.userosscache
+
+# OS files
+.DS_Store
+Thumbs.db
