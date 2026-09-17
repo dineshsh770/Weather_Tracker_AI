@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './Weather.css';
 import WeatherPrediction from './WeatherPrediction';
+import { useTheme } from './ThemeContext';
+import { useFavorites } from './useFavorites';
 
 interface WeatherData {
   city: string;
@@ -20,8 +22,10 @@ interface WeatherData {
 }
 
 const Weather: React.FC = () => {
+  const { isDark, toggleTheme } = useTheme();
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites('');
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [city, setCity] = useState('Hyderabad');
+  const [city, setCity] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -92,6 +96,7 @@ const Weather: React.FC = () => {
     e.preventDefault();
     if (inputValue.trim()) {
       fetchWeather(inputValue);
+      addFavorite(inputValue);
       setInputValue('');
     }
   };
@@ -115,11 +120,44 @@ const Weather: React.FC = () => {
   return (
     <div className="weather-container">
       <div className="weather-header">
-        <h1>🌤️ Weather App</h1>
-        <p>Real-time weather updates powered by OpenWeatherMap</p>
+        <div>
+          <h1>🌤️ Weather App</h1>
+          <p>Real-time weather updates powered by OpenWeatherMap</p>
+        </div>
+        <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
+          {isDark ? '☀️' : '🌙'}
+        </button>
       </div>
 
       <div className="search-section">
+        {favorites.length > 0 && (
+          <div className="favorites-container">
+            <div className="favorites-title">⭐ Your Favorite Cities</div>
+            <div className="favorites-list">
+              {favorites.map(fav => (
+                <button
+                  key={fav}
+                  className={`favorite-btn ${fav === city ? 'active' : ''}`}
+                  onClick={() => fetchWeather(fav)}
+                >
+                  {fav}
+                  {favorites.length > 1 && (
+                    <span
+                      className="remove-favorite"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFavorite(fav);
+                      }}
+                    >
+                      ✕
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSearch}>
           <div className="search-box">
             <input
